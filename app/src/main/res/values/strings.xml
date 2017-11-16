@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">TestExample</string>
+    <string name="hello">Hello World!</string>
+    <string name="refresh">刷新</string>
+</resources>
