@@ -2,4 +2,8 @@
     <string name="app_name">TestExample</string>
     <string name="hello">Hello World!</string>
     <string name="refresh">刷新</string>
+    <string name="title_activity_login">登录</string>
+
+    <!-- Strings related to login -->
+    <string name="action_login">登录</string>
 </resources>
