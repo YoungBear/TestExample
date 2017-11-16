@@ -26,6 +26,7 @@ public class LoginActivity extends AppCompatActivity {
     Button mBtnLogin;
 
     private LoginPresenter mLoginPresenter;
+    private UserManager mUserManager;
 
 
     @Override
@@ -39,7 +40,8 @@ public class LoginActivity extends AppCompatActivity {
     @OnClick(R.id.btn_login)
     public void onViewClicked() {
         Log.d(TAG, "onViewClicked: ");
-        mLoginPresenter = new LoginPresenter();
+        mUserManager = new UserManager();
+        mLoginPresenter = new LoginPresenter(mUserManager);
         mLoginPresenter.login(mEtUserName.getText().toString(), mEtPassword.getText().toString());
     }
 }

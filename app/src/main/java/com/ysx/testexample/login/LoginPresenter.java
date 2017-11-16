@@ -1,9 +1,6 @@
 package com.ysx.testexample.login;
 
 
-import android.text.TextUtils;
-import android.util.Log;
-
 /**
  * @author ysx
  * @date 2017/11/16
@@ -13,15 +10,20 @@ import android.util.Log;
 public class LoginPresenter {
     private static final String TAG = "LoginPresenter";
 
-    private final UserManager mUserManager = new UserManager();
+    private final UserManager mUserManager;
+
+    public LoginPresenter(UserManager userManager) {
+        mUserManager = userManager;
+    }
 
     public void login(String username, String password) {
-        Log.d(TAG, "login: username: " + username + ", password: " + password);
-        if (TextUtils.isEmpty(username) || TextUtils.isEmpty(password)) {
+        if (username == null || username.length() == 0) {
+            return;
+        }
+        if (password == null || password.length() == 0) {
             return;
         }
 
         mUserManager.performLogin(username, password);
     }
-
 }
