@@ -35,6 +35,8 @@ mock就是创建一个类的虚假的对象，在测试环境中，用来替换�
 1. **验证这个对象的某些方法的调用情况，调用了多少次，参数是什么等等。**
 2. **指定这个对象的某些方法的行为，返回特定的值，或者是执行特定的动作。**
 
+### 验证方法的调用情况
+
 例子：
 
 ```
@@ -106,6 +108,82 @@ Mockito.mock()并不是mock一整个类，而是根据传进去的一个类，mo
 #### 第二个误解：
 mock出来的对象并不会自动替换掉正式代码里面的对象，你必须要有某种方式把mock对象应用到正式代码里面。
 
+### 使用mock指定返回值
+
+例子：
+PasswordValidator代码：
+
+```
+public class PasswordValidator {
+
+    public PasswordValidator() {
+    }
+
+    public boolean verifyPassword(String password) {
+        //假设这个方法需要联网
+        return true;
+    }
+}
+```
+
+指定返回值的代码：
+
+```
+        PasswordValidator mockPasswordValidator = mock(PasswordValidator.class);
+        /**
+         * 指定mockPasswordValidator的返回值
+         */
+        when(mockPasswordValidator.verifyPassword("123456")).thenReturn(true);
+        when(mockPasswordValidator.verifyPassword("123")).thenReturn(false);
+```
+
+使用Mockito的静态方法when来指定对象的方法的返回值，如上边的例子，`when(mockPasswordValidator.verifyPassword("123456")).thenReturn(true)` 表示，当该mockPasswordValidator调用方法verifyPassword并且参数为"123456"的时候，返回结果为true。下边那一行代码表示，当参数为"123"，返回结果为false。
+
+再看看我们的需要测试的方法login的源代码：
+
+增加了校验密码的方法，如果校验不通过，则直接return，不会调用mUserManager的performLogin方法。
+
+```
+    public void login(String username, String password) {
+        if (username == null || username.length() == 0) {
+            return;
+        }
+        if (password == null || password.length() == 0) {
+            return;
+        }
+
+        if (!mPasswordValidator.verifyPassword(password)) {
+            return;
+        }
+
+        mUserManager.performLogin(username, password);
+    }
+```
+
+测试的代码：
+
+```
+    @Test
+    public void testLogin() throws Exception {
+
+        UserManager mockUserManager = mock(UserManager.class);
+        PasswordValidator mockPasswordValidator = mock(PasswordValidator.class);
+        /**
+         * 指定mockPasswordValidator的返回值
+         */
+        when(mockPasswordValidator.verifyPassword("123456")).thenReturn(true);
+        when(mockPasswordValidator.verifyPassword("123")).thenReturn(false);
+        LoginPresenter loginPresenter = new LoginPresenter(mockUserManager, mockPasswordValidator);
+        loginPresenter.login("youngbear", "123456");
+
+        verify(mockUserManager).performLogin("youngbear", "123456");
+    }
+```
+
+因为我们将校验密码的方法，当传递"123456"的时候，返回为true，即校验通过。所以我们这个单元测试可以通过，即UserManager的performLogin方法得到了正确的调用。当我们调用login传递密码参数为"123"的时候，就会因为密码校验不通过，导致performLogin方法没有调用，即单元测试失败。
+
+另外，如果没有指定返回值，默认情况下，mockPasswordValidator.verifyPassword()会默认返回false，也会导致单元测试失败。
+
 
 ## API列表
 
@@ -128,7 +206,9 @@ mock出来的对象并不会自动替换掉正式代码里面的对象，你必�
 3. `anyString()` 参数可以为任意字符串。用于verify函数。
 4. `anyInt()` 任意整型。
 5. `anyList()` 任意列表。
-...
+
+#### 指定返回值
+1. `when(object.method(args)).thenReturn(result)` 为对象object的方法method传递参数args并且指定返回值为result。
 
 ## 名词解释
 

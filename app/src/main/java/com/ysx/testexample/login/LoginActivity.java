@@ -27,6 +27,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private LoginPresenter mLoginPresenter;
     private UserManager mUserManager;
+    private PasswordValidator mPasswordValidator;
 
 
     @Override
@@ -34,14 +35,16 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+        mUserManager = new UserManager();
+        mPasswordValidator = new PasswordValidator();
+        mLoginPresenter = new LoginPresenter(mUserManager, mPasswordValidator);
     }
 
 
     @OnClick(R.id.btn_login)
     public void onViewClicked() {
         Log.d(TAG, "onViewClicked: ");
-        mUserManager = new UserManager();
-        mLoginPresenter = new LoginPresenter(mUserManager);
+
         mLoginPresenter.login(mEtUserName.getText().toString(), mEtPassword.getText().toString());
     }
 }

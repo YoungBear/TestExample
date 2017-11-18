@@ -1,6 +1,7 @@
 package com.ysx.testexample;
 
 import com.ysx.testexample.login.LoginPresenter;
+import com.ysx.testexample.login.PasswordValidator;
 import com.ysx.testexample.login.UserManager;
 
 import org.junit.Test;
@@ -20,7 +21,13 @@ public class LoginPresenterTest {
     public void testLogin() throws Exception {
 
         UserManager mockUserManager = mock(UserManager.class);
-        LoginPresenter loginPresenter = new LoginPresenter(mockUserManager);
+        PasswordValidator mockPasswordValidator = mock(PasswordValidator.class);
+        /**
+         * 指定mockPasswordValidator的返回值
+         */
+        when(mockPasswordValidator.verifyPassword("123456")).thenReturn(true);
+        when(mockPasswordValidator.verifyPassword("123")).thenReturn(false);
+        LoginPresenter loginPresenter = new LoginPresenter(mockUserManager, mockPasswordValidator);
         loginPresenter.login("youngbear", "123456");
 
 
